@@ -1,0 +1,81 @@
+
+
+populateNotes();
+
+function notesObj(title, notes) {
+    this.title = title;
+    this.notes = notes;
+    this.changeTitle = function (newTitle) {
+        this.title = newTitle;
+    }
+    this.changeNotes = function (newNotes) {
+        this.notes = newNotes;
+    }
+}
+
+let submit = document.getElementById("submitBtn");
+submit.addEventListener("click", function () {
+    let newtitle = document.getElementById("titleTxt");
+    let newnotes = document.getElementById("notesTxt");
+    let localObj = new notesObj(newtitle.value, newnotes.value);
+    addNotes(localObj);
+    newtitle.value = "";
+    newnotes.value = "";
+});
+
+//To add a new notes to the localstorage 
+function addNotes(newnotesObj) {
+    let ls = localStorage.getItem("notes")
+    if (ls == null) {
+        let array = []
+        array.push(newnotesObj)
+        localStorage.setItem("notes", JSON.stringify(arr));
+        console.log(localStorage.getItem("notes"))
+    } else {
+        let array = []
+        array = JSON.parse(ls);
+        array.push(newnotesObj);
+        localStorage.setItem("notes", JSON.stringify(arr));
+        console.log(localStorage.getItem("notes"))
+    }
+    populateNotes();
+}
+
+//Function to populate notes 
+function populateNotes() {
+    let refre = document.getElementById("new_div");
+    if (refre != null)
+        refre.remove();
+
+    let ls = localStorage.getItem("notes")
+    if (ls == null) {
+        localStorage.setItem("notes", null)
+    } else {
+        let html = ``;
+        let ls_obj = JSON.parse(localStorage.getItem("notes"));
+        Array.from(ls_obj).forEach((element, index) => {
+            html += `<div class="card" style="width: 18rem; margin :1rem">
+                        <div class="card-body">
+                            <h5 class="card-title">${element.title}</h5>
+                            <br>
+                            <p class="card-text">${element.notes}</p>
+                            <button class="btn btn-outline-danger my-2 my-sm-0" id="${index}" onclick="del(${index})">Delete</button>
+                        </div>
+                    </div>`
+            // console.log(element.title,element.notes,index)
+        })
+        let div = document.createElement("div");
+        div.setAttribute("id", "new_div");
+        div.innerHTML = html;
+        let ref = document.getElementById("div_row");
+        ref.insertBefore(div, document.getElementById("hr"))
+    }
+}
+
+function del(index) {
+    let ls = localStorage.getItem("notes")
+    let array = JSON.parse(ls)
+    array.splice(indes, 1);
+    ls.setItem("notes", JSON.stringify(arr));
+    populateNotes();
+}
